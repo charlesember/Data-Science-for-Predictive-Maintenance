@@ -95,8 +95,8 @@ for key in FFTn1400rpm.keys():
     FFTn1400rpmc[key]=pd.concat(FFTn1400rpm[key]).groupby("Index").mean()
     FFTn2800rpmc[key]=pd.concat(FFTn2800rpm[key]).groupby("Index").mean()
 
-f_low = 1
-f_high= 100
+f_low = 35
+f_high= 45
 X_filt = X [X>f_low]
 #Calculating the RMS
 for keys in FFTn1400rpmc:
