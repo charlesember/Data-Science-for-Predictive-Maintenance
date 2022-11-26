@@ -129,7 +129,7 @@ for key in FFTn1400rpm.keys():
     plt.stem(X, FFTn1400rpmc[key], markerfmt="")
     plt.xlabel("Frequency in Hz")
     plt.ylim(0,0.03)
-    plt.xlim(0,100)
+    plt.xlim(100,200)
     i=i+1
 plt.show()
 
@@ -140,7 +140,9 @@ for key in FFTn2800rpm.keys():
     plt.stem(X, FFTn2800rpmc[key], markerfmt="")
     plt.xlabel("Frequency in Hz")
     plt.ylim(0,0.05)
-    plt.xlim(0,100)
+    plt.xlim(200,300)
     i=i+1
 plt.show()
 
+for key in FFTn1400rpm.keys():
+    FFTn1400rpmc[key]["Frequency"] = X.tolist()
