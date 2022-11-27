@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from os import listdir
 from scipy.fft import fft
 import numpy as np
+import calcs as cal
 
 n1400rpm = {
     "0%": [],
@@ -61,7 +62,6 @@ for keys in n1400rpm.keys():
     for i in range(len(n2800rpm[keys])):
         n2800rpm[keys][i]=n2800rpm[keys][i].to_numpy()
 
-
 """Making the FFT spectre"""
 fs = 6400
 N = np.size(n1400rpm["0%"][1][:,1])
@@ -95,54 +95,72 @@ for key in FFTn1400rpm.keys():
     FFTn1400rpmc[key]=pd.concat(FFTn1400rpm[key]).groupby("Index").mean()
     FFTn2800rpmc[key]=pd.concat(FFTn2800rpm[key]).groupby("Index").mean()
 
-f_low = 35
-f_high= 45
-X_filt = X [X>f_low]
-#Calculating the RMS
-for keys in FFTn1400rpmc:
-    RMSVal["FFTn1400rpm "+keys] = 2*FFTn1400rpmc[keys]["Amplitude"].to_numpy()
-    RMSVal["FFTn1400rpm "+keys][1:] = RMSVal["FFTn1400rpm "+keys][1:]/np.sqrt(2)
-    RMSVal["FFTn1400rpm "+keys] = RMSVal["FFTn1400rpm "+keys]*1.633/2
-    RMSVal["FFTn1400rpm "+keys] = RMSVal["FFTn1400rpm "+keys][X>f_low]
-    RMSVal["FFTn1400rpm "+keys] = RMSVal["FFTn1400rpm "+keys][X_filt<f_high]
-    RMSVal["FFTn1400rpm "+keys] = np.sqrt(sum(RMSVal["FFTn1400rpm "+keys]**2))
-    
-    RMSVal["FFTn2800rpm "+keys] = 2*FFTn2800rpmc[keys]["Amplitude"].to_numpy()
-    RMSVal["FFTn2800rpm "+keys][1:] = RMSVal["FFTn2800rpm "+keys][1:]/np.sqrt(2)
-    RMSVal["FFTn2800rpm "+keys] = RMSVal["FFTn2800rpm "+keys]*1.633/2
-    RMSVal["FFTn2800rpm "+keys] = RMSVal["FFTn2800rpm "+keys][X>f_low]
-    RMSVal["FFTn2800rpm "+keys] = RMSVal["FFTn2800rpm "+keys][X_filt<f_high]
-    RMSVal["FFTn2800rpm "+keys] = np.sqrt(sum(RMSVal["FFTn2800rpm "+keys]**2))
+# i=1
+# plt.figure()
+# for key in FFTn1400rpm.keys():
+#     plt.subplot(2,3,i)
+#     plt.title("FFT 1400 rpm - Valve Position open = "+key)
+#     plt.stem(X, FFTn1400rpmc[key], markerfmt="")
+#     plt.xlabel("Frequency in Hz")
+#     plt.ylim(0,0.03)
+#     plt.xlim(0,40)
+#     i=i+1
+# plt.show()
 
-print("\nThe RMS Values are:")
-print("Area: "+str(f_low)+"-"+str(f_high)+" Hz\n")
-for keys in RMSVal:
-    print(keys+" : "+str("{:.3f}".format(RMSVal[keys]))+" m/s^2")
-print("\n")
-    
+# i=1
+# for key in FFTn2800rpm.keys():
+#     plt.subplot(2,3,i)
+#     plt.title("FFT 2800 rpm - Valve Position open = "+key)
+#     plt.stem(X, FFTn2800rpmc[key], markerfmt="")
+#     plt.xlabel("Frequency in Hz")
+#     plt.ylim(0,0.05)
+#     plt.xlim(200,300)
+#     i=i+1
+# plt.show()
 
-i=1
-plt.figure()
-for key in FFTn1400rpm.keys():
-    plt.subplot(2,3,i)
-    plt.title("FFT 1400 rpm - Valve Position open = "+key)
-    plt.stem(X, FFTn1400rpmc[key], markerfmt="")
-    plt.xlabel("Frequency in Hz")
-    plt.ylim(0,0.03)
-    plt.xlim(100,200)
-    i=i+1
-plt.show()
-
-i=1
-for key in FFTn2800rpm.keys():
-    plt.subplot(2,3,i)
-    plt.title("FFT 2800 rpm - Valve Position open = "+key)
-    plt.stem(X, FFTn2800rpmc[key], markerfmt="")
-    plt.xlabel("Frequency in Hz")
-    plt.ylim(0,0.05)
-    plt.xlim(200,300)
-    i=i+1
-plt.show()
-
+# Adding the Frequency information to the concatenated Data for checking
 for key in FFTn1400rpm.keys():
     FFTn1400rpmc[key]["Frequency"] = X.tolist()
+    FFTn2800rpmc[key]["Frequency"] = X.tolist()
+    for i in range(len(FFTn1400rpm[key])):
+        FFTn1400rpm[key][i]["Frequency"] = X.tolist()
+    for i in range(len(FFTn2800rpm[key])):
+        FFTn2800rpm[key][i]["Frequency"] = X.tolist()
+
+test_info = []
+flap_pos = []
+peak_rotation = []
+peak_bladepass = []
+v_rms = []
+a_rms = []
+for keys in FFTn1400rpm:
+    for i in range(len(FFTn1400rpm[keys])):
+        test_info.append("1400rpm")
+        flap_pos.append(keys)
+        
+        slice = FFTn1400rpm[keys][i][FFTn1400rpm[keys][i]["Frequency"].between(10,30)]
+        peak_rotation.append(slice["Amplitude"].loc[slice["Amplitude"].idxmax()])
+        
+        slice = FFTn1400rpm[keys][i][FFTn1400rpm[keys][i]["Frequency"].between(10,30)]
+        peak_bladepass.append(slice["Amplitude"].loc[slice["Amplitude"].idxmax()])
+        
+        v_rms.append(cal.v_rms(FFTn1400rpm[keys][i], 10, 30, X))
+        a_rms.append(cal.a_rms(FFTn1400rpm[keys][i], 10, 30, X))
+
+for keys in FFTn2800rpm:
+    for i in range(len(FFTn2800rpm[keys])):
+        test_info.append("2800rpm")
+        flap_pos.append(keys)
+        
+        slice = FFTn2800rpm[keys][i][FFTn2800rpm[keys][i]["Frequency"].between(10,30)]
+        peak_rotation.append(slice["Amplitude"].loc[slice["Amplitude"].idxmax()])
+        
+        slice = FFTn2800rpm[keys][i][FFTn2800rpm[keys][i]["Frequency"].between(10,30)]
+        peak_bladepass.append(slice["Amplitude"].loc[slice["Amplitude"].idxmax()])
+        
+        v_rms.append(cal.v_rms(FFTn2800rpm[keys][i], 10, 30, X))
+        a_rms.append(cal.a_rms(FFTn2800rpm[keys][i], 10, 30, X))
+        
+        
+Data = pd.DataFrame({"test info":test_info, "flap_pos":flap_pos, "peak_rotation":peak_rotation, "peak_bladepass":peak_bladepass, "v_rms":v_rms, "a_rms":a_rms})
+print(Data)
