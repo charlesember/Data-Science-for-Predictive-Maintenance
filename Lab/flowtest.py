@@ -4,6 +4,7 @@ from os import listdir
 from scipy.fft import fft
 import numpy as np
 import calcs as cal
+import seaborn as sns
 
 n1400rpm = {
     "0%": [],
@@ -107,16 +108,16 @@ for key in FFTn1400rpm.keys():
 #     i=i+1
 # plt.show()
 
-i=1
-for key in FFTn2800rpm.keys():
-    plt.subplot(2,3,i)
-    plt.title("FFT 2800 rpm - Valve Position open = "+key)
-    plt.stem(X, FFTn2800rpmc[key], markerfmt="")
-    plt.xlabel("Frequency in Hz")
-    # plt.ylim(0,0.05)
-    plt.xlim(230,250)
-    i=i+1
-plt.show()
+# i=1
+# for key in FFTn2800rpm.keys():
+#     plt.subplot(2,3,i)
+#     plt.title("FFT 2800 rpm - Valve Position open = "+key)
+#     plt.stem(X, FFTn2800rpmc[key], markerfmt="")
+#     plt.xlabel("Frequency in Hz")
+#     # plt.ylim(0,0.05)
+#     plt.xlim(230,250)
+#     i=i+1
+# plt.show()
 
 # Adding the Frequency information to the concatenated Data for checking
 for key in FFTn1400rpm.keys():
@@ -127,7 +128,7 @@ for key in FFTn1400rpm.keys():
     for i in range(len(FFTn2800rpm[key])):
         FFTn2800rpm[key][i]["Frequency"] = X.tolist()
 
-#Concoatenating the most important Data into a DataFrame
+#Concoatenating the remarkable values into a DataFrame
 test_info = []
 flap_pos = []
 peak_rotation = []
@@ -159,7 +160,17 @@ for keys in FFTn2800rpm:
         peak_bladepass.append(slice["Amplitude"].loc[slice["Amplitude"].idxmax()])
         
         v_rms.append(cal.v_rms(FFTn2800rpm[keys][i], 10, 30, X))
-        a_rms.append(cal.a_rms(FFTn2800rpm[keys][i], 10, 30, X))
-      
-Data = pd.DataFrame({"test info":test_info, "flap_pos":flap_pos, "peak_rotation":peak_rotation, "peak_bladepass":peak_bladepass, "v_rms":v_rms, "a_rms":a_rms})
+        a_rms.append(cal.a_rms(FFTn2800rpm[keys][i], 10, 30, X))   
+Data = pd.DataFrame({"test_info":test_info, "flap_pos":flap_pos, "peak_rotation":peak_rotation, "peak_bladepass":peak_bladepass, "v_rms":v_rms, "a_rms":a_rms})
+Data.sort_values(by=["flap_pos","test_info"], inplace=True)
 print(Data)
+
+# Plotting the different remarkable values to see which can be used to differenciate
+# plt.figure()
+# i=1
+# for key in FFTn1400rpm.keys():
+#     plt.subplot(2,3,i)
+#     plt.title(key)
+#     sns.scatterplot(Data[Data["flap_pos"]==key], x="test_info", y="a_rms", hue="test_info")
+#     i+=1
+# plt.show()
