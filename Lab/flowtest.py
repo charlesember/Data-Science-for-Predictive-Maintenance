@@ -167,27 +167,43 @@ Data = pd.DataFrame({"test_info":test_info, "flap_pos_open":flap_pos, "peak_rota
 Data.sort_values(by=["flap_pos_open","test_info"], inplace=True)
 print(Data)
 
+dataheader = []
+for col in Data.columns:
+    dataheader.append(col)
+del dataheader[0:2]
 # Plotting the different remarkable values to see which can be used to differenciate
-plt.figure()
 i=1
-for key in FFTn1400rpm.keys():
-    plt.subplot(2,3,i)
-    plt.title(key)
-    sns.scatterplot(Data[Data["flap_pos_open"]==int(key.strip("%"))], x="test_info", y="a_rms", hue="test_info")
-    i+=1
+plt.figure()
+for info in dataheader:
+    for info2 in dataheader:
+        plt.subplot(4,4,i)
+        plt.title(info)
+        sns.scatterplot(Data[Data["test_info"]==1400], x=info2, y=info, hue="flap_pos_open")
+        i+=1
 plt.show()
 
-"""Due to the plotting we can see, that the a_rms values are best suited for classification"""
-y = Data["flap_pos_open"]
-for col1 in Data.columns:
-    for col2 in Data.columns:
-        if col1!=col2 and col1!="flap_pos_open" and col2!="flap_pos_open":
-            X=Data[[col1,col2]]
-            Xtrain, Xtest, ytrain, ytest = train_test_split(X,y, test_size=0.25, random_state=0)
+i=1
+plt.figure()
+for info in dataheader:
+    for info2 in dataheader:
+        plt.subplot(4,4,i)
+        plt.title(info)
+        sns.scatterplot(Data[Data["test_info"]==2800], x=info2, y=info, hue="flap_pos_open")
+        i+=1
+plt.show()
+
+
+
+# y = Data["flap_pos_open"]
+# for col1 in Data.columns:
+#     for col2 in Data.columns:
+#         if col1!=col2 and col1!="flap_pos_open" and col2!="flap_pos_open":
+#             X=Data[[col1,col2]]
+#             Xtrain, Xtest, ytrain, ytest = train_test_split(X,y, test_size=0.25, random_state=0)
             
-            model = GaussianNB()
-            model.fit(Xtrain,ytrain)
-            ypred = model.predict(Xtrain)
-            correct = accuracy_score(ytrain,ypred, normalize=False)
-            incorrect = np.size(ytrain)-correct
-            print(f"{col1}/{col2}: Score=W{incorrect}-R{correct} accuracy={accuracy_score(ytrain,ypred):.2f}%")
+#             model = GaussianNB()
+#             model.fit(Xtrain,ytrain)
+#             ypred = model.predict(Xtrain)
+#             correct = accuracy_score(ytrain,ypred, normalize=False)
+#             incorrect = np.size(ytrain)-correct
+#             print(f"{col1}/{col2}: Score=W{incorrect}-R{correct} accuracy={accuracy_score(ytrain,ypred):.2f}%")
