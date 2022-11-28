@@ -164,7 +164,6 @@ for keys in FFTn2800rpm:
         a_rms.append(cal.a_rms(FFTn2800rpm[keys][i], 10, 30, X))   
 Data = pd.DataFrame({"test_info":test_info, "flap_pos_open":flap_pos, "peak_rotation":peak_rotation, "peak_bladepass":peak_bladepass, "v_rms":v_rms, "a_rms":a_rms})
 Data.sort_values(by=["flap_pos_open","test_info"], inplace=True)
-print(Data)
 
 dataheader = []
 for col in Data.columns:
@@ -172,22 +171,22 @@ for col in Data.columns:
 del dataheader[0:2]
 """Plotting the different remarkable values to see which can be used to differenciate"""
 #1400rpm
-i=1
-plt.figure()
-for info in dataheader:
-    for info2 in dataheader:
-        plt.subplot(4,4,i)
-        plt.title(f"1400rpm")
-        sns.scatterplot(Data[Data["test_info"]==1400], x=info2, y=info, hue="flap_pos_open")
-        i+=1
-plt.show()
-#2800 rpm
-i=1
-plt.figure()
-for info in dataheader:
-    for info2 in dataheader:
-        plt.subplot(4,4,i)
-        plt.title(f"2800rpm")
-        sns.scatterplot(Data[Data["test_info"]==2800], x=info2, y=info, hue="flap_pos_open")
-        i+=1
-plt.show()
+# i=1
+# plt.figure()
+# for info in dataheader:
+#     for info2 in dataheader:
+#         plt.subplot(4,4,i)
+#         plt.title(f"1400rpm")
+#         sns.scatterplot(Data[Data["test_info"]==1400], x=info2, y=info, hue="flap_pos_open")
+#         i+=1
+# plt.show()
+# #2800 rpm
+# i=1
+# plt.figure()
+# for info in dataheader:
+#     for info2 in dataheader:
+#         plt.subplot(4,4,i)
+#         plt.title(f"2800rpm")
+#         sns.scatterplot(Data[Data["test_info"]==2800], x=info2, y=info, hue="flap_pos_open")
+#         i+=1
+# plt.show()
