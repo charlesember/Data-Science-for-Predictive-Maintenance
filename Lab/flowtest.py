@@ -5,6 +5,9 @@ from scipy.fft import fft
 import numpy as np
 import calcs as cal
 import seaborn as sns
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import GaussianNB
+from sklearn.metrics import accuracy_score
 
 n1400rpm = {
     "0%": [],
@@ -137,9 +140,8 @@ v_rms = []
 a_rms = []
 for keys in FFTn1400rpm:
     for i in range(len(FFTn1400rpm[keys])):
-        test_info.append("1400rpm")
-        flap_pos.append(keys)
-        
+        test_info.append(1400)
+        flap_pos.append(int(keys.strip("%")))
         slice = FFTn1400rpm[keys][i][FFTn1400rpm[keys][i]["Frequency"].between(10,30)]
         peak_rotation.append(slice["Amplitude"].loc[slice["Amplitude"].idxmax()])
         
@@ -150,8 +152,8 @@ for keys in FFTn1400rpm:
         a_rms.append(cal.a_rms(FFTn1400rpm[keys][i], 10, 30, X))
 for keys in FFTn2800rpm:
     for i in range(len(FFTn2800rpm[keys])):
-        test_info.append("2800rpm")
-        flap_pos.append(keys)
+        test_info.append(2800)
+        flap_pos.append(int(keys.strip("%")))
         
         slice = FFTn2800rpm[keys][i][FFTn2800rpm[keys][i]["Frequency"].between(30,40)]
         peak_rotation.append(slice["Amplitude"].loc[slice["Amplitude"].idxmax()])
@@ -161,16 +163,32 @@ for keys in FFTn2800rpm:
         
         v_rms.append(cal.v_rms(FFTn2800rpm[keys][i], 10, 30, X))
         a_rms.append(cal.a_rms(FFTn2800rpm[keys][i], 10, 30, X))   
-Data = pd.DataFrame({"test_info":test_info, "flap_pos":flap_pos, "peak_rotation":peak_rotation, "peak_bladepass":peak_bladepass, "v_rms":v_rms, "a_rms":a_rms})
-Data.sort_values(by=["flap_pos","test_info"], inplace=True)
+Data = pd.DataFrame({"test_info":test_info, "flap_pos_open":flap_pos, "peak_rotation":peak_rotation, "peak_bladepass":peak_bladepass, "v_rms":v_rms, "a_rms":a_rms})
+Data.sort_values(by=["flap_pos_open","test_info"], inplace=True)
 print(Data)
 
 # Plotting the different remarkable values to see which can be used to differenciate
-# plt.figure()
-# i=1
-# for key in FFTn1400rpm.keys():
-#     plt.subplot(2,3,i)
-#     plt.title(key)
-#     sns.scatterplot(Data[Data["flap_pos"]==key], x="test_info", y="a_rms", hue="test_info")
-#     i+=1
-# plt.show()
+plt.figure()
+i=1
+for key in FFTn1400rpm.keys():
+    plt.subplot(2,3,i)
+    plt.title(key)
+    sns.scatterplot(Data[Data["flap_pos_open"]==int(key.strip("%"))], x="test_info", y="a_rms", hue="test_info")
+    i+=1
+plt.show()
+
+"""Due to the plotting we can see, that the a_rms values are best suited for classification"""
+y = Data["flap_pos_open"]
+
+for col1 in Data.columns:
+    for col2 in Data.columns:
+        if col1!=col2 and col1!="flap_pos_open" and col2!="flap_pos_open":
+            X=Data[[col1,col2]]
+            Xtrain, Xtest, ytrain, ytest = train_test_split(X,y, test_size=0.25, random_state=0)
+            
+            model = GaussianNB()
+            model.fit(Xtrain,ytrain)
+            ypred = model.predict(Xtrain)
+            correct = accuracy_score(ytrain,ypred, normalize=False)
+            incorrect = np.size(ytrain)-correct
+            print(f"{col1}/{col2}: Score=W{incorrect}-R{correct} accuracy={accuracy_score(ytrain,ypred):.2f}%")

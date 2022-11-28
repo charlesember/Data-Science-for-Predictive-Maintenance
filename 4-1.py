@@ -14,6 +14,7 @@ import numpy as np
 iris = sns.load_dataset("iris")
 iris = pd.concat([iris[iris["species"] == "versicolor"], iris[iris["species"] == "virginica"]])
 y = iris["species"]
+print(iris.columns)
 for col1 in iris.columns:
     for col2 in iris.columns:
         if col1 != col2 and col1!= "species" and col2 != "species":
