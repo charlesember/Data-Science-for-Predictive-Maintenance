@@ -179,7 +179,6 @@ plt.show()
 
 """Due to the plotting we can see, that the a_rms values are best suited for classification"""
 y = Data["flap_pos_open"]
-
 for col1 in Data.columns:
     for col2 in Data.columns:
         if col1!=col2 and col1!="flap_pos_open" and col2!="flap_pos_open":
