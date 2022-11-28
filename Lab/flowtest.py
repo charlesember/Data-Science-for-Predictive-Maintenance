@@ -171,39 +171,46 @@ dataheader = []
 for col in Data.columns:
     dataheader.append(col)
 del dataheader[0:2]
-# Plotting the different remarkable values to see which can be used to differenciate
+"""Plotting the different remarkable values to see which can be used to differenciate"""
+#1400rpm
 i=1
 plt.figure()
 for info in dataheader:
     for info2 in dataheader:
         plt.subplot(4,4,i)
-        plt.title(info)
+        plt.title(f"1400rpm")
         sns.scatterplot(Data[Data["test_info"]==1400], x=info2, y=info, hue="flap_pos_open")
         i+=1
 plt.show()
-
+#2800 rpm
 i=1
 plt.figure()
 for info in dataheader:
     for info2 in dataheader:
         plt.subplot(4,4,i)
-        plt.title(info)
+        plt.title(f"2800rpm")
         sns.scatterplot(Data[Data["test_info"]==2800], x=info2, y=info, hue="flap_pos_open")
         i+=1
 plt.show()
 
 
 
-# y = Data["flap_pos_open"]
-# for col1 in Data.columns:
-#     for col2 in Data.columns:
-#         if col1!=col2 and col1!="flap_pos_open" and col2!="flap_pos_open":
-#             X=Data[[col1,col2]]
-#             Xtrain, Xtest, ytrain, ytest = train_test_split(X,y, test_size=0.25, random_state=0)
-            
-#             model = GaussianNB()
-#             model.fit(Xtrain,ytrain)
-#             ypred = model.predict(Xtrain)
-#             correct = accuracy_score(ytrain,ypred, normalize=False)
-#             incorrect = np.size(ytrain)-correct
-#             print(f"{col1}/{col2}: Score=W{incorrect}-R{correct} accuracy={accuracy_score(ytrain,ypred):.2f}%")
+y = Data[Data["test_info"]==1400]["flap_pos_open"]
+X=Data[Data["test_info"]==1400][["peak_bladepass","a_rms"]]
+Xtrain, Xtest, ytrain, ytest = train_test_split(X,y, test_size=0.25, random_state=0)        
+model = GaussianNB()
+model.fit(Xtrain,ytrain)
+ypred = model.predict(Xtrain)
+correct = accuracy_score(ytrain,ypred, normalize=False)
+incorrect = np.size(ytrain)-correct
+print(f"1400rpm-peak_bladepass/a_rms: Score=W{incorrect}-R{correct} accuracy={accuracy_score(ytrain,ypred):.2f}%")
+
+y = Data[Data["test_info"]==2800]["flap_pos_open"]
+X=Data[Data["test_info"]==2800][["peak_bladepass","a_rms"]]
+Xtrain, Xtest, ytrain, ytest = train_test_split(X,y, test_size=0.25, random_state=0)        
+model = GaussianNB()
+model.fit(Xtrain,ytrain)
+ypred = model.predict(Xtrain)
+correct = accuracy_score(ytrain,ypred, normalize=False)
+incorrect = np.size(ytrain)-correct
+print(f"2800rpm-peak_bladepass/a_rms: Score=W{incorrect}-R{correct} accuracy={accuracy_score(ytrain,ypred):.2f}%")
