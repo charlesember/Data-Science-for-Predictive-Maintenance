@@ -30,6 +30,7 @@ for keys in flowrates1400.keys():
 Data["Volume_Flow"] = flowlis
 
 #Regression with linear model
+print("----Linear Model----\n")
 for turnrates in Data["test_info"].unique():
     for header in dataheader:
         model = LinearRegression(fit_intercept=True)
@@ -46,6 +47,7 @@ for turnrates in Data["test_info"].unique():
         print()
 
 #Regression with quadratic model
+print("\n----Quadratic Model----\n")
 for turnrates in Data["test_info"].unique():
     for header in dataheader:
         polymod = PolynomialFeatures(degree=2, include_bias=False)
