@@ -37,7 +37,7 @@ FFTn2800rpm = {
 RMSVal={}
 FFTn1400rpmc = {}
 FFTn2800rpmc = {}  
-"""Loading the data and making it ready to be concatenated"""
+"""Loading the data"""
 #loading the Data
 timecols = ["Time", "Amplitude","B","C"]
 for key in n1400rpm.keys():
@@ -129,6 +129,24 @@ for key in FFTn1400rpm.keys():
         FFTn1400rpm[key][i]["Frequency"] = X.tolist()
     for i in range(len(FFTn2800rpm[key])):
         FFTn2800rpm[key][i]["Frequency"] = X.tolist()
+        
+"""Adding the classification dependant on the rotation"""
+# print("FFTn1400rpm")
+# for keys in FFTn1400rpm.keys():
+#     for i in range(len(FFTn1400rpm[keys])):
+#         slice = FFTn1400rpm[keys][i][FFTn1400rpm[keys][i]["Frequency"].between(10,30)]
+#         max = slice["Amplitude"].loc[slice["Amplitude"].idxmax()]
+#         maxa = FFTn1400rpm[keys][i]["Amplitude"].loc[FFTn1400rpm[keys][i]["Amplitude"].idxmax()]
+#         print(max/maxa)
+        
+# print("FFTn2800rpm")
+# for keys in FFTn2800rpm.keys():
+#     for i in range(len(FFTn2800rpm[keys])):
+#         slice = FFTn2800rpm[keys][i][FFTn2800rpm[keys][i]["Frequency"].between(10,30)]
+#         max = slice["Amplitude"].loc[slice["Amplitude"].idxmax()]
+#         maxa = FFTn2800rpm[keys][i]["Amplitude"].loc[FFTn2800rpm[keys][i]["Amplitude"].idxmax()]
+#         print(max/maxa)
+# A useful boundary is 0.06 since the values for 1400rpm are ~0.1 and 2800 are ~0.01
 
 #Concoatenating the remarkable values into a DataFrame
 test_info = []
@@ -137,6 +155,7 @@ peak_rotation = []
 peak_bladepass = []
 v_rms = []
 a_rms = []
+rotation_speed_calc = []
 for keys in FFTn1400rpm:
     for i in range(len(FFTn1400rpm[keys])):
         test_info.append(1400)
@@ -144,11 +163,18 @@ for keys in FFTn1400rpm:
         slice = FFTn1400rpm[keys][i][FFTn1400rpm[keys][i]["Frequency"].between(10,30)]
         peak_rotation.append(slice["Amplitude"].loc[slice["Amplitude"].idxmax()])
         
+        criterion = slice["Amplitude"].loc[slice["Amplitude"].idxmax()]/FFTn1400rpm[keys][i]["Amplitude"].loc[FFTn1400rpm[keys][i]["Amplitude"].idxmax()]
+        if criterion >= 0.06:
+            rotation_speed_calc.append(1400)
+        else:
+            rotation_speed_calc.append(2800)
+        
         slice = FFTn1400rpm[keys][i][FFTn1400rpm[keys][i]["Frequency"].between(110,130)]
         peak_bladepass.append(slice["Amplitude"].loc[slice["Amplitude"].idxmax()])
         
         v_rms.append(cal.v_rms(FFTn1400rpm[keys][i], 10, 30, X))
         a_rms.append(cal.a_rms(FFTn1400rpm[keys][i], 10, 30, X))
+        
 for keys in FFTn2800rpm:
     for i in range(len(FFTn2800rpm[keys])):
         test_info.append(2800)
@@ -157,20 +183,32 @@ for keys in FFTn2800rpm:
         slice = FFTn2800rpm[keys][i][FFTn2800rpm[keys][i]["Frequency"].between(30,40)]
         peak_rotation.append(slice["Amplitude"].loc[slice["Amplitude"].idxmax()])
         
+        slice = FFTn2800rpm[keys][i][FFTn2800rpm[keys][i]["Frequency"].between(10,30)]
+        criterion = slice["Amplitude"].loc[slice["Amplitude"].idxmax()]/FFTn2800rpm[keys][i]["Amplitude"].loc[FFTn2800rpm[keys][i]["Amplitude"].idxmax()]
+        if criterion < 0.06:
+            rotation_speed_calc.append(2800)
+        else:
+            rotation_speed_calc.append(1400)
+        
         slice = FFTn2800rpm[keys][i][FFTn2800rpm[keys][i]["Frequency"].between(230,250)]
         peak_bladepass.append(slice["Amplitude"].loc[slice["Amplitude"].idxmax()])
         
-        v_rms.append(cal.v_rms(FFTn2800rpm[keys][i], 10, 30, X))
-        a_rms.append(cal.a_rms(FFTn2800rpm[keys][i], 10, 30, X))   
-Data = pd.DataFrame({"test_info":test_info, "flap_pos_open":flap_pos, "peak_rotation":peak_rotation, "peak_bladepass":peak_bladepass, "v_rms":v_rms, "a_rms":a_rms})
+        v_rms.append(cal.v_rms(FFTn2800rpm[keys][i], 30, 40, X))
+        a_rms.append(cal.a_rms(FFTn2800rpm[keys][i], 30, 40, X))   
+Data = pd.DataFrame({"test_info":test_info, "rotation_speed_calc":rotation_speed_calc, "flap_pos_open":flap_pos, "peak_rotation":peak_rotation, "peak_bladepass":peak_bladepass, "v_rms":v_rms, "a_rms":a_rms})
 Data.sort_values(by=["flap_pos_open","test_info"], inplace=True)
+
+"""Checking if the classification by comparison operator was successful"""
+for index, rows in Data.iterrows():
+    if rows["test_info"] != rows["rotation_speed_calc"]:
+        print(f"Wrong Values in {index}")
 
 dataheader = []
 for col in Data.columns:
     dataheader.append(col)
 del dataheader[0:2]
 """Plotting the different remarkable values to see which can be used to differenciate"""
-#1400rpm
+# #1400rpm
 # i=1
 # plt.figure()
 # for info in dataheader:
