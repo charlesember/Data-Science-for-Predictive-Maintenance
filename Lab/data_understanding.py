@@ -206,7 +206,7 @@ for index, rows in Data.iterrows():
 dataheader = []
 for col in Data.columns:
     dataheader.append(col)
-del dataheader[0:2]
+del dataheader[0:3]
 """Plotting the different remarkable values to see which can be used to differenciate"""
 # #1400rpm
 # i=1
