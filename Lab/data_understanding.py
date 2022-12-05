@@ -97,7 +97,7 @@ for key in FFTn1400rpm.keys():
     FFTn2800rpmc[key]=pd.concat(FFTn2800rpm[key]).groupby("Index").mean()
 
 """Taking a look at the concatenated Measurements to scan for remarkable values"""
-#1400rpm
+# # 1400rpm
 # i=1
 # plt.figure()
 # for key in FFTn1400rpm.keys():
@@ -109,7 +109,7 @@ for key in FFTn1400rpm.keys():
 #     plt.xlim(60,180)
 #     i=i+1
 # plt.show()
-#2800rpm
+# # 2800rpm
 # i=1
 # for key in FFTn2800rpm.keys():
 #     plt.subplot(2,3,i)
@@ -145,7 +145,7 @@ for key in FFTn1400rpm.keys():
 #         slice = FFTn2800rpm[keys][i][FFTn2800rpm[keys][i]["Frequency"].between(10,30)]
 #         max = slice["Amplitude"].loc[slice["Amplitude"].idxmax()]
 #         maxa = FFTn2800rpm[keys][i]["Amplitude"].loc[FFTn2800rpm[keys][i]["Amplitude"].idxmax()]
-#         print(max/maxa)
+#         print(f"{keys}/{i} - {max/maxa}")
 # A useful boundary is 0.06 since the values for 1400rpm are ~0.1 and 2800 are ~0.01
 
 #Concoatenating the remarkable values into a DataFrame
