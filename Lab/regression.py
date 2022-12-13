@@ -73,6 +73,7 @@ Data["Volume_Flow"] = flowlis
 
 print("\n----Quadratic Model----\n")
 for turnrates in Data["test_info"].unique():
+    n=1
     polymod = PolynomialFeatures(degree=2, include_bias=False)
     model = make_pipeline(polymod, LinearRegression(fit_intercept=True))
     x = Data["peak_bladepass"][Data["test_info"]==turnrates].to_numpy()
@@ -87,7 +88,10 @@ for turnrates in Data["test_info"].unique():
 
     print(f"{turnrates} - peak_bladepass/a_rms")
     print(f"r2_score = {r2_score(y,ypred):.3f}")
-    print(f"{coef}, {intercept:.2f}")
+    for coef in coef:
+        print(f"Coef{n} = {coef}")
+        n+=1
+    print(f"intercept = {intercept:.2f}")
     print()
 
 
