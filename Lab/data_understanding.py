@@ -207,6 +207,7 @@ dataheader = []
 for col in Data.columns:
     dataheader.append(col)
 del dataheader[0:3]
+
 """Plotting the different remarkable values to see which can be used to differenciate"""
 # #1400rpm
 # i=1
@@ -214,7 +215,6 @@ del dataheader[0:3]
 # for info in dataheader:
 #     for info2 in dataheader:
 #         plt.subplot(4,4,i)
-#         plt.title(f"1400rpm")
 #         sns.scatterplot(Data[Data["test_info"]==1400], x=info2, y=info, hue="flap_pos_open")
 #         i+=1
 # plt.show()
@@ -224,7 +224,6 @@ del dataheader[0:3]
 # for info in dataheader:
 #     for info2 in dataheader:
 #         plt.subplot(4,4,i)
-#         plt.title(f"2800rpm")
 #         sns.scatterplot(Data[Data["test_info"]==2800], x=info2, y=info, hue="flap_pos_open")
 #         i+=1
 # plt.show()

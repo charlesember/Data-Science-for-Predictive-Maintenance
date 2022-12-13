@@ -81,9 +81,13 @@ for turnrates in Data["test_info"].unique():
     y = Data["Volume_Flow"][Data["test_info"]==turnrates].to_numpy()
     model.fit(X,y)
     ypred = model.predict(X)
+    
+    coef = model.named_steps['linearregression'].coef_
+    intercept = model.named_steps['linearregression'].intercept_
 
     print(f"{turnrates} - peak_bladepass/a_rms")
     print(f"r2_score = {r2_score(y,ypred):.3f}")
+    print(f"{coef}, {intercept:.2f}")
     print()
 
 
