@@ -7,7 +7,7 @@ import numpy as np
 """Adding the Classification"""
 #for 1400rpm
 y = Data[Data["test_info"]==1400]["flap_pos_open"]
-X=Data[Data["test_info"]==1400][["peak_bladepass","a_rms"]]
+X = Data[Data["test_info"]==1400][["peak_bladepass","a_rms"]]
 Xtrain, Xtest, ytrain, ytest = train_test_split(X,y, test_size=0.25, random_state=0)        
 model = GaussianNB()
 model.fit(Xtrain,ytrain)
@@ -17,7 +17,7 @@ incorrect = np.size(ytrain)-correct
 print(f"1400rpm-peak_bladepass/a_rms: Score=W{incorrect}-R{correct} accuracy={accuracy_score(ytrain,ypred):.2f}%")
 #for 2800rpm
 y = Data[Data["test_info"]==2800]["flap_pos_open"]
-X=Data[Data["test_info"]==2800][["peak_bladepass","a_rms"]]
+X = Data[Data["test_info"]==2800][["peak_bladepass","a_rms"]]
 Xtrain, Xtest, ytrain, ytest = train_test_split(X,y, test_size=0.25, random_state=0)        
 model = GaussianNB()
 model.fit(Xtrain,ytrain)
