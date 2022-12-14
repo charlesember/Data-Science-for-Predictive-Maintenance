@@ -14,7 +14,11 @@ model.fit(Xtrain,ytrain)
 ypred = model.predict(Xtrain)
 correct = accuracy_score(ytrain,ypred, normalize=False)
 incorrect = np.size(ytrain)-correct
-print(f"1400rpm-peak_bladepass/a_rms: Score=W{incorrect}-R{correct} accuracy={accuracy_score(ytrain,ypred):.2f}%")
+print()
+print(f"1400rpm - peak_bladepass/a_rms:")
+print(f"Score = W{incorrect}-R{correct}")
+print(f"accuracy = {accuracy_score(ytrain,ypred):.2f}%")
+print()
 #for 2800rpm
 y = Data[Data["test_info"]==2800]["flap_pos_open"]
 X = Data[Data["test_info"]==2800][["peak_bladepass","a_rms"]]
@@ -24,4 +28,7 @@ model.fit(Xtrain,ytrain)
 ypred = model.predict(Xtrain)
 correct = accuracy_score(ytrain,ypred, normalize=False)
 incorrect = np.size(ytrain)-correct
-print(f"2800rpm-peak_bladepass/a_rms: Score=W{incorrect}-R{correct} accuracy={accuracy_score(ytrain,ypred):.2f}%")
+print(f"2800rpm - peak_bladepass/a_rms:")
+print(f"Score = W{incorrect}-R{correct}")
+print(f"accuracy = {accuracy_score(ytrain,ypred):.2f}%")
+print()

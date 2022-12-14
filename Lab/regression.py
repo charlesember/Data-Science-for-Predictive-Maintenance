@@ -5,6 +5,7 @@ from sklearn.preprocessing import PolynomialFeatures
 import numpy as np
 from sklearn.metrics import r2_score
 from sklearn.pipeline import make_pipeline
+import matplotlib.pyplot as plt
 
 flowrates1400 ={
     0:0,
@@ -89,11 +90,18 @@ for turnrates in Data["test_info"].unique():
     print(f"{turnrates} - peak_bladepass/a_rms")
     print(f"r2_score = {r2_score(y,ypred):.3f}")
     for coef in coef:
-        print(f"Coef{n} = {coef}")
+        print(f"Coef{n} = {coef:.2f}")
         n+=1
     print(f"intercept = {intercept:.2f}")
     print()
-
+    fig = plt.figure()
+    ax = fig.add_subplot(projection="3d")
+    ax.scatter(x,x2, ypred, color="red", marker="*")
+    ax.scatter(x,x2,y, color="green")
+    plt.xlabel("peak_bladepass")
+    plt.ylabel("a_rms")
+    ax.set_zlabel("Volume_Flow")
+    plt.show()
 
 
 """Neither linear nor quadratic regression provides usable Data"""
